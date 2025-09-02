@@ -1,0 +1,43 @@
+import pandas as pd
+
+# Step 1: Create the base data
+data = [
+    {"Stock Name": "Coal India", "CMP (₹)": 372.5, "P/E": 6.94, "ROCE (%)": 48.04, "ROE (%)": 69.03,
+     "Debt/Equity": 0.01, "PEG": 0.26, "Dividend Yield (%)": 6.85},
+    {"Stock Name": "Natco Pharma", "CMP (₹)": 931.05, "P/E": 8.85, "ROCE (%)": 32.80, "ROE (%)": 43.02,
+     "Debt/Equity": 0.02, "PEG": 0.47, "Dividend Yield (%)": 1.02},
+    {"Stock Name": "IIFL Capital", "CMP (₹)": 312.2, "P/E": 13.69, "ROCE (%)": 34.58, "ROE (%)": 43.27,
+     "Debt/Equity": 0.37, "PEG": 0.47, "Dividend Yield (%)": 0.96},
+    {"Stock Name": "Intl. Conveyors", "CMP (₹)": 87.06, "P/E": 6.01, "ROCE (%)": 29.48, "ROE (%)": 41.02,
+     "Debt/Equity": 0.24, "PEG": 0.08, "Dividend Yield (%)": 1.26},
+    {"Stock Name": "Ganesh Housing", "CMP (₹)": 884.7, "P/E": 12.78, "ROCE (%)": 44.02, "ROE (%)": 41.95,
+     "Debt/Equity": 0.01, "PEG": 0.51, "Dividend Yield (%)": 0.57},
+    {"Stock Name": "Natl. Aluminium", "CMP (₹)": 180.7, "P/E": 6.3, "ROCE (%)": 43.96, "ROE (%)": 28.63,
+     "Debt/Equity": 0.01, "PEG": 0.30, "Dividend Yield (%)": 4.43},
+]
+
+df = pd.DataFrame(data)
+
+# Step 2: Assumed Growth Rate
+growth_rate = 12  # conservative estimate in %
+
+# Step 3: Calculate EPS
+df["EPS (₹)"] = df["CMP (₹)"] / df["P/E"]
+
+# Step 4: Calculate Intrinsic Value (Buffett-style formula)
+df["Intrinsic Value (₹)"] = df["EPS (₹)"] * (8.5 + 2 * growth_rate)
+
+# Step 5: Undervaluation %
+df["Undervaluation (%)"] = ((df["Intrinsic Value (₹)"] - df["CMP (₹)"]) / df["CMP (₹)"]) * 100
+
+# Round values
+df = df.round({
+    "EPS (₹)": 2,
+    "Intrinsic Value (₹)": 2,
+    "Undervaluation (%)": 2
+})
+
+# Step 6: Export to Excel
+df.to_excel("Value_Stocks_with_Intrinsic_Value.xlsx", index=False)
+
+print("✅ Excel file saved as: Value_Stocks_with_Intrinsic_Value.xlsx")
