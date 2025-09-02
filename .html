@@ -1,43 +1,184 @@
-import pandas as pd
+<!doctype html>
+<html lang="gu">
+<meta charset="utf-8">
+<title>Ghanshyam Dhorajiya - OCR & TTS Full System</title>
+<body style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:750px;margin:auto;padding:20px;background:#f4f4f9;">
 
-# Step 1: Create the base data
-data = [
-    {"Stock Name": "Coal India", "CMP (₹)": 372.5, "P/E": 6.94, "ROCE (%)": 48.04, "ROE (%)": 69.03,
-     "Debt/Equity": 0.01, "PEG": 0.26, "Dividend Yield (%)": 6.85},
-    {"Stock Name": "Natco Pharma", "CMP (₹)": 931.05, "P/E": 8.85, "ROCE (%)": 32.80, "ROE (%)": 43.02,
-     "Debt/Equity": 0.02, "PEG": 0.47, "Dividend Yield (%)": 1.02},
-    {"Stock Name": "IIFL Capital", "CMP (₹)": 312.2, "P/E": 13.69, "ROCE (%)": 34.58, "ROE (%)": 43.27,
-     "Debt/Equity": 0.37, "PEG": 0.47, "Dividend Yield (%)": 0.96},
-    {"Stock Name": "Intl. Conveyors", "CMP (₹)": 87.06, "P/E": 6.01, "ROCE (%)": 29.48, "ROE (%)": 41.02,
-     "Debt/Equity": 0.24, "PEG": 0.08, "Dividend Yield (%)": 1.26},
-    {"Stock Name": "Ganesh Housing", "CMP (₹)": 884.7, "P/E": 12.78, "ROCE (%)": 44.02, "ROE (%)": 41.95,
-     "Debt/Equity": 0.01, "PEG": 0.51, "Dividend Yield (%)": 0.57},
-    {"Stock Name": "Natl. Aluminium", "CMP (₹)": 180.7, "P/E": 6.3, "ROCE (%)": 43.96, "ROE (%)": 28.63,
-     "Debt/Equity": 0.01, "PEG": 0.30, "Dividend Yield (%)": 4.43},
-]
+<div style="text-align:center;margin-bottom:20px;">
+  <h1 style="color:#2c3e50;margin-bottom:5px;">Ghanshyam Dhorajiya</h1>
+  <h3 style="color:#34495e;font-weight:normal;">📸 Photo/Text → OCR → Line-by-Line Translation → TTS → Download</h3>
+</div>
 
-df = pd.DataFrame(data)
+<!-- Upload / Camera -->
+<div style="margin-bottom:15px;">
+  <label style="font-weight:bold;font-size:16px;">📷 Upload Photo / Capture:</label><br>
+  <input type="file" id="fileInput" accept="image/*" style="padding:6px;border-radius:5px;border:1px solid #ccc;width:100%;">
+</div>
 
-# Step 2: Assumed Growth Rate
-growth_rate = 12  # conservative estimate in %
+<!-- Text Area with Watermark -->
+<div style="margin-bottom:15px;">
+  <label style="font-weight:bold;font-size:16px;">📝 Text Area:</label>
+  <div id="input" contenteditable="true" 
+       style="border:1px solid #ccc;min-height:180px;padding:10px;border-radius:8px;white-space:pre-wrap;background:#fff;color:#555;position:relative;box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+    <span id="watermark" style="position:absolute;top:10px;left:12px;color:#aaa;pointer-events:none;user-select:none;font-style:italic;">
+      Upload Photo Or Type Text To Listen
+    </span>
+  </div>
+</div>
 
-# Step 3: Calculate EPS
-df["EPS (₹)"] = df["CMP (₹)"] / df["P/E"]
+<!-- Language Selection -->
+<div style="margin-bottom:15px;">
+  <label style="font-weight:bold;font-size:16px;">🌐 Select Output Language:</label>
+  <select id="langSelect" style="padding:6px;border-radius:5px;border:1px solid #ccc;width:100%;">
+    <option value="en">English</option>
+    <option value="gu">Gujarati</option>
+    <option value="hi">Hindi</option>
+  </select>
+</div>
 
-# Step 4: Calculate Intrinsic Value (Buffett-style formula)
-df["Intrinsic Value (₹)"] = df["EPS (₹)"] * (8.5 + 2 * growth_rate)
+<!-- Speed Slider -->
+<div style="margin-bottom:15px;">
+  <label style="font-weight:bold;font-size:16px;">⚡ Speech Speed: <span id="speedValue">1</span>x</label><br>
+  <input type="range" id="speedSlider" min="0.5" max="2" value="1" step="0.1" style="width:100%;">
+</div>
 
-# Step 5: Undervaluation %
-df["Undervaluation (%)"] = ((df["Intrinsic Value (₹)"] - df["CMP (₹)"]) / df["CMP (₹)"]) * 100
+<!-- Buttons -->
+<div style="text-align:center; margin-top:10px;">
+  <button id="speak" style="padding:12px 25px;margin:5px;background:#27ae60;color:#fff;border:none;border-radius:6px;font-size:16px; cursor:pointer; box-shadow:0 3px 6px rgba(0,0,0,0.2);">
+    ▶ Speak Text
+  </button>
+  <button id="stop" style="padding:12px 25px;margin:5px;background:#c0392b;color:#fff;border:none;border-radius:6px;font-size:16px; cursor:pointer; box-shadow:0 3px 6px rgba(0,0,0,0.2);">
+    ⏹ Stop
+  </button>
+  <button id="downloadText" style="padding:12px 25px;margin:5px;background:#2980b9;color:#fff;border:none;border-radius:6px;font-size:16px; cursor:pointer; box-shadow:0 3px 6px rgba(0,0,0,0.2);">
+    💾 Download Text
+  </button>
+  <button id="buyFull" style="padding:12px 25px;margin:5px;background:#f39c12;color:#fff;border:none;border-radius:6px;font-size:16px; cursor:pointer; box-shadow:0 3px 6px rgba(0,0,0,0.2);">
+    💳 Buy Full Version
+  </button>
+</div>
 
-# Round values
-df = df.round({
-    "EPS (₹)": 2,
-    "Intrinsic Value (₹)": 2,
-    "Undervaluation (%)": 2
-})
+<!-- Privacy Note -->
+<div style="margin-top:15px; font-size:13px; color:#555; font-style:italic; text-align:center;">
+  Your photos are processed locally in your browser and are <strong>not stored anywhere</strong>. Privacy fully protected.
+</div>
 
-# Step 6: Export to Excel
-df.to_excel("Value_Stocks_with_Intrinsic_Value.xlsx", index=False)
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
 
-print("✅ Excel file saved as: Value_Stocks_with_Intrinsic_Value.xlsx")
+<script>
+// ---------- 10-Day Free Trial + Payment ----------
+const trialKey = 'ocr_tts_trial_start';
+const today = new Date().getTime();
+let start = localStorage.getItem(trialKey);
+if(!start){
+  localStorage.setItem(trialKey, today);
+  start = today;
+}
+const diff = today - start;
+const days = Math.floor(diff / (1000*60*60*24));
+const speakBtn = document.getElementById("speak");
+const stopBtn = document.getElementById("stop");
+const downloadBtn = document.getElementById("downloadText");
+const buyBtn = document.getElementById("buyFull");
+
+if(days >= 10){
+  speakBtn.disabled = true;
+  stopBtn.disabled = true;
+  downloadBtn.disabled = true;
+  alert("Your 10-day free trial has expired. Please buy the full version.");
+}
+
+// Buy Full Version Button Redirect
+buyBtn.onclick = ()=>{
+  window.open("https://www.paypal.com/paypalme/YourLinkHere", "_blank");
+};
+
+// ---------- Watermark ----------
+const inputDiv = document.getElementById('input');
+const watermark = document.getElementById('watermark');
+inputDiv.addEventListener('input',()=>{ 
+  if(inputDiv.innerText.trim().length>0) watermark.style.display='none';
+  else watermark.style.display='block';
+});
+
+// ---------- Photo Upload with Auto-Crop & Contrast ----------
+document.getElementById('fileInput').addEventListener('change', async (event)=>{
+  const file = event.target.files[0];
+  if(!file) return;
+  watermark.style.display='none';
+  inputDiv.innerText="⏳ Scanning image... Please wait";
+
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const scale = Math.min(1024/img.width, 1024/img.height,1);
+    canvas.width = img.width*scale;
+    canvas.height = img.height*scale;
+    const ctx = canvas.getContext('2d');
+
+    // Auto contrast enhancement
+    ctx.filter = 'contrast(1.5) brightness(1.2)';
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    
+    canvas.toBlob(async (blob)=>{
+      const { data: { text } } = await Tesseract.recognize(blob,'eng+guj+hin',{
+        logger: m => console.log(m)
+      });
+      inputDiv.innerText = text;
+    },'image/jpeg',0.6);
+  }
+});
+
+// ---------- Translation Function (MyMemory API) ----------
+async function translateText(text,targetLang){
+  if(targetLang==='en') return text;
+  const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`);
+  const data = await response.json();
+  return data.responseData.translatedText;
+}
+
+// ---------- Speed Slider ----------
+const speedSlider = document.getElementById("speedSlider");
+const speedValue = document.getElementById("speedValue");
+speedSlider.addEventListener('input', ()=>{
+  speedValue.innerText = speedSlider.value;
+});
+
+// ---------- Speak Button ----------
+document.getElementById("speak").onclick=async ()=>{
+  const text = inputDiv.innerText;
+  if(text.trim().length===0) return alert("Please upload a photo or type text!");
+  const lines = text.split("\n").map(l=>l.trim()).filter(l=>l.length>0);
+  const targetLang = document.getElementById("langSelect").value;
+  
+  let i=0;
+  async function speakNext(){
+    if(i>=lines.length) return;
+    const translatedLine = await translateText(lines[i],targetLang);
+    let utter=new SpeechSynthesisUtterance(translatedLine);
+    utter.lang = (targetLang==='gu')?'gu-IN':(targetLang==='hi')?'hi-IN':'en-US';
+    utter.rate = parseFloat(speedSlider.value);
+    utter.onend=()=>{i++; speakNext();};
+    speechSynthesis.speak(utter);
+  }
+  speakNext();
+};
+
+// ---------- Stop Button ----------
+document.getElementById("stop").onclick=()=>{
+  speechSynthesis.cancel();
+};
+
+// ---------- Download Text ----------
+document.getElementById("downloadText").onclick=()=>{
+  const textToSave = inputDiv.innerText;
+  const blob = new Blob([textToSave],{type:"text/plain"});
+  const link = document.createElement("a");
+  link.download="output.txt";
+  link.href = window.URL.createObjectURL(blob);
+  link.click();
+};
+</script>
+</body>
+</html>
